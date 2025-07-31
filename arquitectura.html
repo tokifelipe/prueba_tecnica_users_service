@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Service API - Arquitectura</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1, h2 { color: #333; }
+        .diagram { margin: 20px 0; padding: 20px; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <h1>🏗️ User Service API - Arquitectura de la Solución</h1>
+    
+    <h2>📊 Diagrama General de Arquitectura</h2>
+    <div class="diagram">
+        <div class="mermaid">
+graph TB
+    subgraph "Cliente"
+        Browser[🌐 Navegador Web]
+        API_Client[📱 Cliente API]
+    end
+
+    subgraph "Docker Environment"
+        subgraph "Contenedor users_service"
+            FastAPI[⚡ FastAPI Application<br/>Puerto: 5000]
+            Main[📄 main.py<br/>- Endpoints REST<br/>- Validaciones<br/>- Manejo de errores]
+            Utils[🔧 utils.py<br/>- Hash passwords<br/>- JWT tokens<br/>- Modelos Pydantic]
+        end
+        
+        subgraph "Contenedor users_service_tests"
+            Tests[🧪 Tests Unitarios<br/>- 19 tests<br/>- Sin conexión BD<br/>- Funciones puras]
+        end
+        
+        subgraph "Contenedor users_service_mongodb"
+            MongoDB[🗄️ MongoDB 5.0<br/>Base de datos: users_service<br/>Colección: users]
+        end
+    end
+
+    subgraph "Estructura de Datos"
+        UserModel[👤 User Model<br/>- id: UUID<br/>- name: string<br/>- email: EmailStr<br/>- password: hash<br/>- phones: Array<br/>- created/modified: datetime<br/>- last_login: datetime<br/>- token: JWT<br/>- isactive: boolean]
+        
+        PhoneModel[📞 Phone Model<br/>- number: string<br/>- citycode: string<br/>- contrycode: string]
+    end
+
+    Browser --> FastAPI
+    API_Client --> FastAPI
+    
+    FastAPI --> Main
+    Main --> Utils
+    Main --> MongoDB
+    
+    Tests --> Utils
+    Tests -.->|No Connection| MongoDB
+    
+    Main --> UserModel
+    UserModel --> PhoneModel
+    
+    classDef service fill:#c8e6c9
+    classDef database fill:#ffecb3
+    classDef model fill:#f3e5f5
+    classDef test fill:#fff3e0
+    
+    class FastAPI,Main,Utils service
+    class MongoDB database
+    class UserModel,PhoneModel model
+    class Tests test
+        </div>
+    </div>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+</body>
+</html>

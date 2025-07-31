@@ -1,0 +1,51 @@
+version: '3.7'
+
+services:
+  # Servicio principal de la aplicación
+  users_service:
+    build:
+      context: .
+      target: production
+    ports:
+      - "5000:80"
+    volumes:
+      - .:/code
+    depends_on:
+      - users_service_mongodb
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - users_service
+
+  # Servicio para ejecutar tests unitarios
+  users_service_tests:
+    build:
+      context: .
+      target: test
+    volumes:
+      - ./app:/code/app
+      - ./unit_test:/code/unit_test
+    profiles:
+      - test
+    networks:
+      - users_service
+
+  # Base de datos MongoDB
+  users_service_mongodb:
+    image: mongo:5.0
+    volumes:
+      - users_service_mongodb_container:/data/db
+    logging:
+      driver: none
+    networks:
+      - users_service
+
+volumes:
+  users_service_mongodb_container:
+
+networks:
+  users_service:
+    external: true
