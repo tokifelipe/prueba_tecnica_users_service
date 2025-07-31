@@ -15,6 +15,10 @@ API REST para gestión de usuarios con autenticación JWT, desarrollada con Fast
 
 ## Ejecutar la Aplicación
 
+### Abrir consola:
+
+Despues de haber clonado el repositorio se debe abrir una consola en el directorio del repositorio(/prueba_tecnica_users_service)
+
 ### Docker Compose
 ```bash
 docker-compose up users_service --build
